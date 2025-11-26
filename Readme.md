@@ -1,66 +1,43 @@
-# Praktikum 5: Autentikasi & Otorisasi API (JWT)
+# Praktikum 7: Relasi Data (One-to-Many) & Query Lanjutan
 
-Ini adalah proyek API CRUD (Create, Read, Update, Delete) untuk data **Komik** yang diamankan menggunakan **JSON Web Token (JWT)**.
+Proyek ini adalah pengembangan dari API sebelumnya dengan penambahan fitur **Relasi Database**. 
+Sistem ini menghubungkan tabel `Users` dan `Komik` menggunakan relasi **One-to-Many**, di mana satu User (Penulis) dapat memiliki banyak Komik.
 
-Proyek ini dibangun dengan:
-* **Express.js** sebagai server
-* **Sequelize** sebagai ORM
-* **MySQL** sebagai database (`praktikum5_db`)
-* **bcrypt.js** untuk *hashing* password
-* **jsonwebtoken** untuk membuat dan memverifikasi token
+Dibuat menggunakan:
+* **Express.js** (Server)
+* **Sequelize ORM** (Manajemen Database & Relasi)
+* **PostgreSQL** (Database)
+* **JWT** (Autentikasi)
 
-## 📖 Fitur API
+## 🔗 Struktur Relasi
 
-### Endpoint Autentikasi (Publik)
-* `POST /register`: Mendaftarkan user baru.
-* `POST /login`: Mengautentikasi user dan memberikan JWT (token).
-
-### Endpoint CRUD (Aman - Butuh Token)
-* `GET /komik`: Melihat semua data komik.
-* `POST /komik`: Menambahkan data komik baru.
-* `PUT /komik/:id`: Mengubah data komik berdasarkan ID.
-* `DELETE /komik/:id`: Menghapus data komik berdasarkan ID.
+* **User `hasMany` Komik**: Satu user bisa membuat/memiliki banyak data komik.
+* **Komik `belongsTo` User**: Setiap komik terikat pada satu user pembuatnya.
 
 ---
 
-## 📸 Hasil Pengujian Postman
+## 📸 Hasil Pengujian (5 Skenario Utama)
 
-Berikut adalah alur pengujian API menggunakan Postman.
+Berikut adalah bukti pengujian API menggunakan Postman yang menunjukkan implementasi relasi data dan *eager loading* (query lanjutan).
 
-### 1. Uji Coba Gagal (Membuktikan API Aman)
-Mencoba mengakses rute `/komik` tanpa mengirimkan token. Server menolak akses (`401 Unauthorized`).
+### 1. Register User (Penulis)
+Mendaftarkan user baru yang akan bertindak sebagai pemilik/penulis komik.
+![Register](SS7/01-register.png)
 
-![Test Gagal Tanpa Token](SS/get-unauthorized.png)
+### 2. Login & Ambil Token
+User melakukan login untuk mendapatkan Token JWT. Token ini membawa identitas ID user yang akan digunakan otomatis saat membuat data.
+![Login](SS7/02-login.png)
 
-### 2. Registrasi User Baru
-Membuat akun baru dengan `POST /register`.
+### 3. Create Komik (Otomatisasi Relasi)
+User membuat data komik. Sistem secara otomatis mendeteksi `userId` dari token yang sedang login dan menyimpannya sebagai *Foreign Key* di tabel komik.
+![Create Komik](SS7/03-create-komik.png)
 
-![Registrasi](SS/register-success.png)
+### 4. Query Lanjutan 1: User beserta Komiknya
+Endpoint `GET /users-with-komik`.
+Mengambil data User, dan API otomatis menyertakan daftar komik yang dimilikinya (menggunakan fitur `include` Sequelize).
+![User With Komik](SS7/04-user-with-komik.png)
 
-### 3. Login & Mendapatkan Token
-Login dengan akun yang sudah dibuat (`POST /login`) untuk mendapatkan *Bearer Token*.
-
-![Login](SS/login-get-token.png)
-
-### 4. Pengujian Rute Aman (CRUD dengan Token)
-Semua *request* di bawah ini dikirimkan dengan menyertakan *Bearer Token* di *header Authorization*.
-
-#### GET /komik (Read All)
-Berhasil membaca semua data komik.
-
-![GET All](SS/get-all-success.png)
-
-#### POST /komik (Create)
-Berhasil menambahkan data komik baru.
-
-![POST](SS/create-success.png)
-
-#### PUT /komik/:id (Update)
-Berhasil mengubah data komik.
-
-![PUT](SS/update-success.png)
-
-#### DELETE /komik/:id (Delete)
-Berhasil menghapus data komik.
-
-![DELETE](SS/delete-success.png)
+### 5. Query Lanjutan 2: Komik beserta Pemiliknya
+Endpoint `GET /komik-with-owner`.
+Mengambil data Komik, dan API otomatis menyertakan informasi detail tentang User pemiliknya.
+![Komik With Owner](SS7/05-komik-with-owner.png)
