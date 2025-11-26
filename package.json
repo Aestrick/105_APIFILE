@@ -1,7 +1,7 @@
 {
-  "name": "praktikum5-apikey",
+  "name": "praktikum7-relasi",
   "version": "1.0.0",
-  "description": "Praktikum 5 - API Aman dengan JWT",
+  "description": "Praktikum 7 - API Aman dengan JWT",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
