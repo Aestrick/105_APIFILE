@@ -1,6 +1,5 @@
-require('dotenv').config(); // Load file .env
+require('dotenv').config(); 
 
-// Ambil variabel dari .env
 const { DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT } = process.env;
 
 module.exports = {
@@ -10,7 +9,7 @@ module.exports = {
     database: DB_NAME,
     host: DB_HOST,
     port: DB_PORT,
-    dialect: "postgres", // <--- PENTING: Ganti 'mysql' jadi 'postgres'
+    dialect: "postgres", 
   },
   test: {
     username: DB_USER,
